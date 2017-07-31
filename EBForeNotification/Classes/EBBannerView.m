@@ -56,6 +56,12 @@ UIWindow *originWindow;
 }
 
 -(NSString*) extractContentLabel:(NSDictionary*)userInfo{
+    NSObject *content = userInfo[@"content"];
+    
+    if ([content isKindOfClass:[NSString class]]) {
+        return content;
+    }
+    
     NSObject *alertValue = userInfo[@"aps"][@"alert"];
 
     if ([alertValue isKindOfClass:[NSString class]])
@@ -70,6 +76,28 @@ UIWindow *originWindow;
 
     @throw [NSException exceptionWithName:NSInvalidArgumentException
                                    reason:@"aps['alert'] field malformed: it is neither a string nor a dictionary with key 'loc-key'"
+                                 userInfo:nil];
+}
+
+-(NSString*) extractTitleLabel:(NSDictionary*)userInfo{
+    NSObject *alertValue = userInfo[@"title"];
+    
+    if ([alertValue isKindOfClass:[NSString class]])
+        return alertValue;
+    
+    @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:@"aps['alert'] field malformed: it is neither a string nor a dictionary with key 'loc-key'"
+                                 userInfo:nil];
+}
+
+-(UIImage*) extractIcon:(NSDictionary*)userInfo{
+    NSObject *alertValue = userInfo[@"app_icon"];
+    
+    if ([alertValue isKindOfClass:[UIImage class]])
+        return alertValue;
+    
+    @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:@"aps['alert'] field malformed: it is not an image"
                                  userInfo:nil];
 }
 
@@ -91,8 +119,9 @@ UIWindow *originWindow;
     if (!appName) {
         assert(0);
     }
-    self.title_label.text   = appName;
+    self.title_label.text   = [self extractTitleLabel:userInfo];
     self.content_label.text = [self extractContentLabel:userInfo];
+    [self.icon_image setImage:[self extractIcon:userInfo]];
     self.time_label.text = EBBannerViewTimeText;
     [originWindow makeKeyAndVisible];
     if (!self.isIos10) {
@@ -141,7 +170,7 @@ CGFloat originHeight;
             if (originHeight == 0) {
                 originHeight = self.content_label.frame.size.height;
             }
-            CGFloat caculatedHeight = [self.content_label caculatedSize].height;
+            CGFloat caculatedHeight = [self.content_label caculatedSize].height + 15;
             WEAK_SELF(weakSelf);
             [UIView animateWithDuration:BannerSwipeDownTime animations:^{
                 weakSelf.frame = CGRectMake(0, 0, ScreenWidth, BannerHeight + caculatedHeight - originHeight);
