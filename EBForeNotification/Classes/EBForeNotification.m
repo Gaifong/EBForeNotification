@@ -39,10 +39,7 @@ NSString *EBBannerViewTimeText = @"现在";    //默认弹窗时间 default bann
 
 +(void)handleRemoteNotification:(NSDictionary*)userInfo soundID:(int)soundID isIos10:(BOOL)isIos10{
     if (userInfo) {
-        id aps = [userInfo valueForKey:@"aps"];
-        if (aps && [aps isKindOfClass:[NSDictionary class]] && [aps valueForKey:@"alert"] && ![[aps valueForKey:@"alert"] isEqual: @""]) {
-            [EBForeNotification showBannerWithUserInfo:userInfo soundID:soundID isIos10:isIos10];
-        }
+        [EBForeNotification showBannerWithUserInfo:userInfo soundID:soundID isIos10:isIos10];
     }
 }
 

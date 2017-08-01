@@ -104,9 +104,12 @@ UIWindow *originWindow;
 -(void)setUserInfo:(NSDictionary *)userInfo{
     _userInfo = userInfo;
     UIImage *appIcon;
-    appIcon = [UIImage imageNamed:@"AppIcon60x60"];
+    appIcon = userInfo[@"app_icon"];
     if (!appIcon) {
-        appIcon = [UIImage imageNamed:@"AppIcon80x80"];
+        appIcon = [UIImage imageNamed:@"AppIcon60x60"];
+        if (!appIcon) {
+            appIcon = [UIImage imageNamed:@"AppIcon80x80"];
+        }
     }
     [self.icon_image setImage:appIcon];
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
@@ -115,14 +118,12 @@ UIWindow *originWindow;
     if (!appName) {
         appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
     }
-    //appName = @"input a app name here"; //if appName = nil, unsign this line and change it to you'r own app name.
-    if (!appName) {
-        assert(0);
-    }
     self.title_label.text   = [self extractTitleLabel:userInfo];
     self.content_label.text = [self extractContentLabel:userInfo];
-    [self.icon_image setImage:[self extractIcon:userInfo]];
-    self.time_label.text = EBBannerViewTimeText;
+    if (appIcon != nil) {
+        [self.icon_image setImage: appIcon];
+    }
+    self.time_label.text = NSLocalizedString(@"now", nil);
     [originWindow makeKeyAndVisible];
     if (!self.isIos10) {
         self.time_label.textColor      = [UIImage colorAtPoint:self.time_label.center];
